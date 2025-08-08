@@ -2,18 +2,21 @@ const express = require('express');
 const axios = require('axios');
 const cookieParser = require('cookie-parser');
 const path = require('path');
-require('dotenv').config();
 
 const { OAuth2 } = require('discord-oauth2');
 const oauth = new OAuth2();
 const app = express();
 
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = process.env.REDIRECT_URI || 'http://localhost:8000/callback';
-const GUILD_ID = process.env.GUILD_ID;
-const ADMIN_ROLE_IDS = process.env.ADMIN_ROLE_IDS ? process.env.ADMIN_ROLE_IDS.split(',') : [];
+// Environment Variables
+const CLIENT_ID = '1389852325648007290';
+const CLIENT_SECRET = 'v5H1dQm0hC3vjep1AThH7j47CiHvtkU2';
+const REDIRECT_URI = 'http://localhost:8000/callback';
+const GUILD_ID = '1365848012194316312'; 
+const ADMIN_ROLE_IDS = '1365851423081762897'; 
 const DISCORD_API_BASE = 'https://discord.com/api/v10';
+
+// Get the bot token from environment variable
+const BOT_TOKEN = process.env.BOT_TOKEN; // Ensure BOT_TOKEN is set as an environment variable
 
 // In-memory sessions for simplicity
 let sessions = {};
@@ -70,7 +73,7 @@ app.get('/callback', async (req, res) => {
 
 // Get user roles from the guild
 async function getUserRoles(userId) {
-    const headers = { Authorization: `Bot ${process.env.BOT_TOKEN}` };
+    const headers = { Authorization: `Bot ${BOT_TOKEN}` };
     const response = await axios.get(`${DISCORD_API_BASE}/guilds/${GUILD_ID}/members/${userId}`, { headers });
     return response.data.roles || [];
 }
@@ -161,4 +164,3 @@ app.get('/logout', (req, res) => {
 app.listen(8000, () => {
     console.log('Server running on http://localhost:8000');
 });
-
