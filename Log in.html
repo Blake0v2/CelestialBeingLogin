@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arch Angels Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #ff7f00, #e03e2d);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+        }
+
+        .login-box {
+            text-align: center;
+        }
+
+        .login-btn {
+            background-color: #00aaff;
+            color: white;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .dashboard {
+            display: flex;
+            width: 100%;
+        }
+
+        .sidebar {
+            background-color: #ff7f00;
+            width: 200px;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            background: #2c3e50;
+        }
+
+        .logout-btn {
+            background-color: #e03e2d;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1>Welcome to Arch Angels</h1>
+        <a href="https://your-backend-server.com/oauth2/login" class="login-btn">Log In</a>
+    </div>
+
+    <!-- Dashboard after Login -->
+    <div class="dashboard" style="display: none;" id="dashboard">
+        <div class="sidebar">
+            <h2>Arch Angels</h2>
+            <button id="current-raid-btn">Current Raid</button><br>
+            <button id="commands-btn">Commands</button><br>
+            <button class="logout-btn" onclick="logout()">Log Out</button>
+        </div>
+        <div class="content">
+            <div id="welcome-message"></div>
+            <div id="current-raid" style="display: none;"></div>
+            <div id="commands" style="display: none;">
+                <h2>Bot Commands</h2>
+                <div>Economy Commands: /balance, /daily, /stocks, ...</div>
+                <div>Gambling Commands: /coinflip, /slots, ...</div>
+                <div>Grind Commands: !key, !desert, !carry, ...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulate login check
+        const loggedIn = localStorage.getItem('loggedIn') === 'true';
+
+        if (loggedIn) {
+            document.querySelector('.login-box').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'flex';
+            document.getElementById('welcome-message').innerHTML = 'Welcome, User!';
+        }
+
+        document.getElementById('current-raid-btn').addEventListener('click', () => {
+            document.getElementById('current-raid').style.display = 'block';
+            document.getElementById('commands').style.display = 'none';
+
+            // Fetch raid info
+            fetch("/api/current-raid")
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('current-raid').innerHTML = `
+                        <h3>Current Raid: ${data.name}</h3>
+                        <p>${data.description}</p>
+                    `;
+                });
+        });
+
+        document.getElementById('commands-btn').addEventListener('click', () => {
+            document.getElementById('current-raid').style.display = 'none';
+            document.getElementById('commands').style.display = 'block';
+        });
+
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>
