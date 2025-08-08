@@ -33,7 +33,7 @@ app.get('/oauth2/login', (req, res) => {
 });
 
 // OAuth2 Callback Route
-app.get('/oauth2/callback', async (req, res) => {
+app.get('/callback', async (req, res) => {
     try {
         const token = await oauth.tokenRequest({
             clientId: CLIENT_ID,
@@ -161,3 +161,4 @@ app.get('/logout', (req, res) => {
 app.listen(8000, () => {
     console.log('Server running on http://localhost:8000');
 });
+
