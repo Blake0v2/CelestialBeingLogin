@@ -13,11 +13,11 @@ app.use(express.static('public'));
 // OAuth2 Login Route
 app.get('/oauth2/login', (req, res) => {
     const authUrl = oauth.generateAuthUrl({
-        clientId,
+        clientId: '1389852325648007290',
         scope: ['identify', 'guilds'],
-        redirectUri
+        redirectUri: 'http://local:8000/oauth2/callback', // Match this with your Discord redirect URI
     });
-    res.redirect(authUrl);
+    res.redirect(authUrl); // This should redirect to Discord's OAuth2 verification page
 });
 
 // OAuth2 Callback Route
@@ -50,19 +50,9 @@ app.get('/api/current-raid', (req, res) => {
     });
 });
 
-// OAuth2 Login Route
-app.get('/oauth2/login', (req, res) => {
-    const authUrl = oauth.generateAuthUrl({
-        clientId: '1389852325648007290',
-        scope: ['identify', 'guilds'],
-        redirectUri: 'http://local:8000/oauth2/callback', // Match this with your Discord redirect URI
-    });
-    res.redirect(authUrl); // This should redirect to Discord's OAuth2 verification page
+app.listen(8000, () => {
+    console.log('Server running on http://localhost:8000/callback');
 });
 
-
-app.listen(3000, () => {
-    console.log('Server running on http://localhost:8000');
-});
 
 
