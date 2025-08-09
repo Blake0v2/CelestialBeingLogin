@@ -1,166 +1,55 @@
 const express = require('express');
-const axios = require('axios');
-const cookieParser = require('cookie-parser');
-const path = require('path');
-
 const { OAuth2 } = require('discord-oauth2');
 const oauth = new OAuth2();
 const app = express();
 
-// Environment Variables
-const CLIENT_ID = '1389852325648007290';
-const CLIENT_SECRET = '';
-const REDIRECT_URI = 'http://localhost:8000/callback';
-const GUILD_ID = '1365848012194316312'; // Replace with your actual GUILD_ID
-const ADMIN_ROLE_IDS = ''; // Replace with your actual Admin Role IDs (comma separated if multiple)
-const DISCORD_API_BASE = 'https://discord.com/api/v10';
+const clientId = '1389852325648007290';
+const clientSecret = 'dWOJvWCWiFWTKiw7xmrQa1iLoY7Pd6Ng';
+const redirectUri = 'http://localhost:8000/api/auth/discord/redirect';
 
-// Get the bot token from environment variable
-const BOT_TOKEN = process.env.BOT_TOKEN; // Ensure BOT_TOKEN is set as an environment variable
-
-// In-memory sessions for simplicity
-let sessions = {};
-
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.set('view engine', 'ejs');
+// Serve the static frontend (if you deploy to GitHub Pages)
+app.use(express.static('public'));
 
 // OAuth2 Login Route
 app.get('/oauth2/login', (req, res) => {
     const authUrl = oauth.generateAuthUrl({
-        clientId: CLIENT_ID,
+        clientId: '1389852325648007290',
         scope: ['identify', 'guilds'],
-        redirectUri: REDIRECT_URI,
+        redirectUri: 'http://local:8000/oauth2/callback', // Match this with your Discord redirect URI
     });
-    res.redirect(authUrl); // Redirect to Discord's OAuth2 verification page
+    res.redirect(authUrl); // This should redirect to Discord's OAuth2 verification page
 });
 
 // OAuth2 Callback Route
-app.get('/callback', async (req, res) => {
+app.get('/oauth2/callback', async (req, res) => {
     try {
         const token = await oauth.tokenRequest({
-            clientId: CLIENT_ID,
-            clientSecret: CLIENT_SECRET,
+            clientId,
+            clientSecret,
             code: req.query.code,
-            redirectUri: REDIRECT_URI,
+            redirectUri
         });
 
         const user = await oauth.getUser(token.access_token);
+        res.json(user);
 
-        // Fetch user data
-        const userId = user.id;
-        const userRoles = await getUserRoles(userId);
-
-        const isAdmin = userRoles.some(role => ADMIN_ROLE_IDS.includes(role));
-        const avatarUrl = `https://cdn.discordapp.com/avatars/${userId}/${user.avatar}.png`;
-
-        // Store user session
-        sessions[userId] = {
-            username: user.username,
-            discriminator: user.discriminator,
-            admin: isAdmin,
-            avatarUrl: avatarUrl
-        };
-
-        // Set cookie and redirect to dashboard
-        res.cookie('user_id', userId, { httpOnly: true });
+        // Simulate saving the token and user session (should be handled securely)
+        // In real use, save to session or database
         res.redirect('/dashboard');
     } catch (error) {
-        console.error('Error during OAuth2 callback:', error);
         res.status(500).send('Error during OAuth2 callback.');
     }
 });
 
-// Get user roles from the guild
-async function getUserRoles(userId) {
-    const headers = { Authorization: `Bot ${BOT_TOKEN}` };
-    const response = await axios.get(`${DISCORD_API_BASE}/guilds/${GUILD_ID}/members/${userId}`, { headers });
-    return response.data.roles || [];
-}
-
-// Dashboard Route
-app.get('/dashboard', (req, res) => {
-    const userId = req.cookies.user_id;
-    if (!userId || !sessions[userId]) {
-        return res.redirect('/login'); // If no valid session, redirect to login
-    }
-
-    const userData = sessions[userId];
-    const commands = userData.admin ? getAdminCommands() : getUserCommands();
-    res.render('dashboard', { user: userData, commands });
-});
-
-// Fetch current raid status
+// Example API for fetching current raid
 app.get('/api/current-raid', (req, res) => {
-    const raidStatus = getCurrentRaid();
-    res.json(raidStatus);
+    // Example raid data
+    res.json({
+        name: "Snow Island Raid",
+        description: "The air turns to frost! Join now!"
+    });
 });
 
-// Get current active raid based on the time
-function getCurrentRaid() {
-    const currentMinute = new Date().getMinutes();
-    const raidTimes = {
-        dedu_island: { start: 15, end: 29 },
-        snow_island: { start: 30, end: 44 },
-        jungle_island: { start: 0, end: 14 },
-    };
-
-    const activeRaids = [];
-    for (const raid in raidTimes) {
-        if (currentMinute >= raidTimes[raid].start && currentMinute <= raidTimes[raid].end) {
-            activeRaids.push({ raid, status: 'In Progress' });
-        }
-    }
-
-    return activeRaids.length > 0 ? activeRaids : [{ raid: 'jungle_island', status: 'Not started' }];
-}
-
-// Admin commands
-function getAdminCommands() {
-    return {
-        economy: [
-            { name: '/balance', description: 'Check your account balance' },
-            { name: '/daily', description: 'Claim your daily reward' },
-            { name: '/leaderboard', description: 'See the top 10 users' },
-        ],
-        gambling: [
-            { name: '/slots', description: 'Play slots and win!' },
-            { name: '/coinflip', description: 'Flip a coin' },
-        ],
-        grind: [
-            { name: '!key', description: 'Ping the Key Farm role' },
-            { name: '!desert', description: 'Ping the Desert role' },
-        ],
-    };
-}
-
-// User commands
-function getUserCommands() {
-    return {
-        economy: [
-            { name: '/balance', description: 'Check your account balance' },
-            { name: '/daily', description: 'Claim your daily reward' },
-        ],
-        gambling: [
-            { name: '/slots', description: 'Play slots and win!' },
-        ],
-        grind: [
-            { name: '!key', description: 'Ping the Key Farm role' },
-        ],
-    };
-}
-
-// Logout Route
-app.get('/logout', (req, res) => {
-    const userId = req.cookies.user_id;
-    if (userId) {
-        delete sessions[userId];
-    }
-    res.clearCookie('user_id');
-    res.redirect('/login');
-});
-
-// Run the server
 app.listen(8000, () => {
-    console.log('Server running on http://localhost:8000');
+    console.log('Server running on http://localhost:8000/api/auth/discord/redirect');
 });
