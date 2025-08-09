@@ -5,41 +5,17 @@ const app = express();
 
 const clientId = '1389852325648007290';
 const clientSecret = 'dWOJvWCWiFWTKiw7xmrQa1iLoY7Pd6Ng';
-const redirectUri = 'https://blake0v2.github.io/TheArchAngels/login';
+const redirectUri = 'https://blake0v2.github.io/TheArchAngels/dashboard.html'; // Your redirect URL
 
 // Serve the static frontend (if you deploy to GitHub Pages)
 app.use(express.static('public'));
 
 // OAuth2 Login Route
 app.get('/oauth2/login', (req, res) => {
-    const authUrl = oauth.generateAuthUrl({
-        clientId: '1389852325648007290',
-        scope: ['identify', 'guilds'],
-        redirectUri: 'https://blake0v2.github.io/TheArchAngels/login', // Match this with your Discord redirect URI
-    });
-    res.redirect(authUrl); // This should redirect to Discord's OAuth2 verification page
-});
+    const discordOAuthURL = `https://discord.com/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=identify`;
 
-// OAuth2 Callback Route
-app.get('/oauth2/callback', async (req, res) => {
-    try {
-        const token = await oauth.tokenRequest({
-            clientId,
-            clientSecret,
-            code: req.query.code,
-            redirectUri
-        });
-
-        const user = await oauth.getUser(token.access_token);
-        
-        // Simulate saving the token and user session (should be handled securely)
-        // In real use, save to session or database
-        
-        // Redirect to the specified URI after successful verification
-        res.redirect(redirectUri); // Redirecting to your specified URI after successful OAuth verification
-    } catch (error) {
-        res.status(500).send('Error during OAuth2 callback.');
-    }
+    // Redirect the user directly to Discord's OAuth2 authorization page
+    res.redirect(discordOAuthURL);
 });
 
 // Example API for fetching current raid
@@ -54,4 +30,3 @@ app.get('/api/current-raid', (req, res) => {
 app.listen(8000, () => {
     console.log('Server running on https://blake0v2.github.io/TheArchAngels/dashboard.html');
 });
-
