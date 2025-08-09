@@ -1,254 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arch Angels Dashboard</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(to right, #ff7f00, #e03e2d);
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: white;
-        }
-
-        .login-box {
-            text-align: center;
-        }
-
-        .login-btn {
-            background-color: #00aaff;
-            color: white;
-            padding: 10px 20px;
-            font-size: 18px;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .dashboard {
-            display: flex;
-            width: 100%;
-        }
-
-        .sidebar {
-            background-color: #ff7f00;
-            width: 200px;
-            height: 100vh;
-            padding: 20px;
-        }
-
-        .content {
-            flex-grow: 1;
-            padding: 20px;
-            background: #2c3e50;
-        }
-
-        .logout-btn {
-            background-color: #e03e2d;
-            color: white;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .raid-box {
-            background: #444;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            display: none;
-        }
-
-        .raid-title {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .raid-description {
-            font-size: 16px;
-        }
-
-        .raid-footer {
-            font-size: 14px;
-            margin-top: 10px;
-        }
-
-        .command-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .command-box {
-            background: #444;
-            padding: 15px;
-            border-radius: 8px;
-        }
-
-        .command-title {
-            font-weight: bold;
-        }
-
-        .command-description {
-            font-size: 14px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Discord Bot Dashboard</title>
+  <link rel="stylesheet" href="static/style.css" />
 </head>
 <body>
-    <!-- Login Box -->
-    <div class="login-box" id="login-box">
-        <h1>Welcome to Arch Angels</h1>
-        <a href="/oauth2/login" class="login-btn">Log In</a>
+  <!-- Sidebar -->
+<div class="sidebar">
+  <!-- Bot icon manually set -->
+  <img src="https://i.postimg.cc/MHWZgy2W/Untitled-design-7.png" alt="Bot Icon" id="bot-icon" />
+  <h2 id="bot-name">Arch Angels</h2>
+  <button id="show-dashboard">Dashboard</button>
+  <button id="show-raid">Current Raid</button>
+  <button id="show-commands">Commands</button>
+  <button id="show-leaderboard">Leaderboard</button>
+
+  {% if admin %}
+    <button id="show-staff">Staff Commands</button>
+  {% endif %}
+
+  {% if admin %}
+    <button onclick="startRaid('snow')">Start Snow Island Raid</button>
+    <button onclick="startRaid('jungle')">Start Jungle Island Raid</button>
+    <button onclick="startRaid('dedu')">Start Dedu Island Raid</button>
+    <button onclick="stopRaid('snow')">Stop Snow Island Raid</button>
+    <button onclick="stopRaid('jungle')">Stop Jungle Island Raid</button>
+    <button onclick="stopRaid('dedu')">Stop Dedu Island Raid</button>
+  {% endif %}
+</div>
+
+  <!-- Log Out Button at the top-right -->
+  <button id="log-out-btn" onclick="logout ()">Log Out [➔</button>
+
+  <div class="main-content">
+    <div class="page-section" id="dashboard">
+      <div id="welcome">
+        <img src="{{ user_avatar_url }}" alt="User Avatar" />
+        <h1>Welcome, {{ display_name }}!</h1>
+        <p>This is our official website, developed by @BlakeO_o.</p>
+        <p>Please show support by joining our discord➡️<a href="https://discord.com/invite/A6xhTeGKJg" target="_blank">Arch Angels</a></p>!
+      </div>
     </div>
 
-    <!-- Dashboard after Login -->
-    <div class="dashboard" id="dashboard" style="display: none;">
-        <div class="sidebar">
-            <h2>Arch Angels</h2>
-            <button id="current-raid-btn">Current Raid</button><br>
-            <button id="commands-btn">Commands</button><br>
-            <button id="leaderboard-btn">Leaderboard</button><br>
-            <button class="logout-btn" onclick="logout()">Log Out</button>
-        </div>
-        <div class="content">
-            <div id="welcome-message"></div>
-            <div id="current-raid" style="display: none;"></div>
-            <div id="commands" style="display: none;">
-                <h2>Bot Commands</h2>
-                <div id="economy-commands"></div>
-                <div id="gambling-commands"></div>
-                <div id="grind-commands"></div>
-            </div>
-            <div id="leaderboard" style="display: none;">
-                <h2>Leaderboard</h2>
-                <div id="leaderboard-container">Loading...</div>
-            </div>
-        </div>
+    <div class="page-section" id="current_raid" style="display: none;">
+      <h1>Current Raid Status</h1>
+
+      <div class="raid-box" id="dedu-island">
+        <div class="raid-title">Dedu Island Raid Has Spawned!</div>
+        <div class="raid-description">Will you reach the "King"?</div>
+        <img src="https://i.postimg.cc/rwSNPy5m/Untitled-design-36.png" alt="Dedu Island" class="raid-image" />
+        <div class="raid-footer">Discord.gg/A6xhTeGKJg</div>
+      </div>
+
+      <div class="raid-box" id="snow-island">
+        <div class="raid-title">Snow Island Raid Has Spawned!</div>
+        <div class="raid-description">The air turns to frost!</div>
+        <img src="https://i.postimg.cc/BZcxGZ6P/Untitled-design-37.png" alt="Snow Island" class="raid-image" />
+        <div class="raid-footer">Discord.gg/A6xhTeGKJg</div>
+      </div>
+
+      <div class="raid-box" id="jungle-island">
+        <div class="raid-title">Jungle Island Raid Has Spawned!</div>
+        <div class="raid-description">The beast monarch has started his attack!</div>
+        <img src="https://i.postimg.cc/d0y4vmMq/Untitled-design-35.png" alt="Jungle Island" class="raid-image" />
+        <div class="raid-footer">Discord.gg/A6xhTeGKJg</div>
+      </div>
     </div>
 
-    <script>
-        const userData = {
-            username: 'User',
-            avatarUrl: 'https://www.example.com/avatar.png',
-            displayName: 'User#1234',
-            commands: {
-                economy: [
-                    { name: '/balance', description: 'Check your account balance' },
-                    { name: '/daily', description: 'Claim your daily reward of $100!' },
-                    { name: '/leaderboard', description: 'See the top 10 users' },
-                ],
-                gambling: [
-                    { name: '/slots', description: 'Play slots and win!' },
-                    { name: '/coinflip', description: 'Flip a coin' },
-                ],
-                grind: [
-                    { name: '!key', description: 'Ping the Key Farm role' },
-                    { name: '!desert', description: 'Ping the Desert role' },
-                ]
-            },
-            admin: false, // You can set this dynamically from backend
-        };
+    <div class="page-section" id="commands" style="display: none;">
+      <h1>Bot Commands</h1>
 
-        const raidStatus = [
-            { raid: 'snow_island', status: 'Not started' },
-            { raid: 'jungle_island', status: 'Not started' },
-            { raid: 'dedu_island', status: 'Not started' }
-        ];
+      <!-- Economy Commands -->
+      <h2 class="command-category">Economy Commands</h2>
+      <div class="command-grid">
+        <div class="command-box"><div class="command-title">/balance</div><div class="command-description">Check your account balance</div></div>
+        <div class="command-box"><div class="command-title">/daily</div><div class="command-description">Claim your daily reward of $100!</div></div>
+        <div class="command-box"><div class="command-title">/leaderboard</div><div class="command-description">See the top 10 users with the most money!</div></div>
+        <div class="command-box"><div class="command-title">/stocks</div><div class="command-description">Use this command to see the current stocks!</div></div>
+        <div class="command-box"><div class="command-title">/buy</div><div class="command-description">Buy stacks from the Arch Angel market!</div></div>
+        <div class="command-box"><div class="command-title">/sell</div><div class="command-description">Sell your stocks for money!</div></div>
+        <div class="command-box"><div class="command-title">/portfolio</div><div class="command-description">Look at your portfolio.</div></div>
+      </div>
 
-        function logout() {
-            window.location.href = "/logout";  // Redirect to logout route
+      <!-- Gambling Commands -->
+      <h2 class="command-category">Gambling Commands</h2>
+      <div class="command-grid">
+        <div class="command-box"><div class="command-title">/slots</div><div class="command-description">Play slots and spin a good row!</div></div>
+        <div class="command-box"><div class="command-title">/coinflip</div><div class="command-description">Toss a coin and hope you're lucky!</div></div>
+        <div class="command-box"><div class="command-title">/clicker</div><div class="command-description">Use this to click the button and make money!</div></div>
+        <div class="command-box"><div class="command-title">/blackjack</div><div class="command-description">Play blackjack and win money.</div></div>
+        <div class="command-box"><div class="command-title">/roll</div><div class="command-description">Roll the dice and win!</div></div>
+        <div class="command-box"><div class="command-title">/duel</div><div class="command-description">Challenge your friends to a duel!</div></div>
+        <div class="command-box"><div class="command-title">/lootbox</div><div class="command-description">Find treasure in a box!</div></div>
+        <div class="command-box"><div class="command-title">/bomb</div><div class="command-description">Defuse a bomb for money!</div></div>
+        <div class="command-box"><div class="command-title">/rob</div><div class="command-description">Rob another user for their money!</div></div>
+      </div>
+
+      <!-- Grind Commands -->
+      <h2 class="command-category">Grind Commands</h2>
+      <div class="command-grid">
+        <div class="command-box"><div class="command-title">!key</div><div class="command-description">Ping the Key Farm role and find people to grind with!</div></div>
+        <div class="command-box"><div class="command-title">!desert</div><div class="command-description">Ping the Desert role and find people to grind with!</div></div>
+        <div class="command-box"><div class="command-title">!needcarry</div><div class="command-description">Ping high rank users that you need a carry!</div></div>
+        <div class="command-box"><div class="command-title">!carry</div><div class="command-description">Ping low rank users that you can carry them!</div></div>
+        <div class="command-box"><div class="command-title">!apply4carry</div><div class="command-description">Apply for the 'Carry Verified' role.</div></div>
+        <div class="command-box"><div class="command-title">!apply4needcarry</div><div class="command-description">Apply for the 'Need Carry' role.</div></div>
+      </div>
+    </div>
+
+    <!-- Staff commands (visible only to admins) -->
+    {% if admin %}
+    <div class="page-section" id="staff" style="display: none;">
+      <h1>Staff Commands</h1>
+      <div class="command-grid">
+        <div class="command-box"><div class="command-title">/kick</div><div class="command-description">Kick a member from the server</div></div>
+        <div class="command-box"><div class="command-title">/ban</div><div class="command-description">Ban a member from the server</div></div>
+        <div class="command-box"><div class="command-title">/warn</div><div class="command-description">Warn a member for their actions</div></div>
+        <div class="command-box"><div class="command-title">/mute</div><div class="command-description">Temporarily mute a member</div></div>
+        <div class="command-box"><div class="command-title">/purge</div><div class="command-description">Delete messages in bulk</div></div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="page-section" id="leaderboard" style="display: none;">
+    <h1>🏆 Leaderboard</h1>
+    <div id="leaderboard-container">Loading...</div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // Fetch leaderboard data from FastAPI backend
+        const response = await fetch('/leaderboard');
+        const leaderboardData = await response.json();
+        
+        // Ensure leaderboardData has data
+        if (leaderboardData.length === 0) {
+          document.getElementById('leaderboard-container').innerHTML = 'No data available.';
+          return;
         }
 
-        function showDashboard() {
-            document.getElementById('login-box').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'flex';
-            document.getElementById('welcome-message').innerHTML = `
-                <h2>Welcome, ${userData.displayName}</h2>
-                <img src="${userData.avatarUrl}" alt="Avatar">
-            `;
+        // Clear previous leaderboard content
+        const leaderboardContainer = document.getElementById('leaderboard-container');
+        leaderboardContainer.innerHTML = '';
 
-            displayCommands(userData.commands);
-        }
-
-        function displayCommands(commands) {
-            let economyHTML = '';
-            commands.economy.forEach(cmd => {
-                economyHTML += `<div class="command-box"><div class="command-title">${cmd.name}</div><div class="command-description">${cmd.description}</div></div>`;
-            });
-            document.getElementById('economy-commands').innerHTML = economyHTML;
-
-            let gamblingHTML = '';
-            commands.gambling.forEach(cmd => {
-                gamblingHTML += `<div class="command-box"><div class="command-title">${cmd.name}</div><div class="command-description">${cmd.description}</div></div>`;
-            });
-            document.getElementById('gambling-commands').innerHTML = gamblingHTML;
-
-            let grindHTML = '';
-            commands.grind.forEach(cmd => {
-                grindHTML += `<div class="command-box"><div class="command-title">${cmd.name}</div><div class="command-description">${cmd.description}</div></div>`;
-            });
-            document.getElementById('grind-commands').innerHTML = grindHTML;
-        }
-
-        function showRaidStatus() {
-            document.getElementById('commands').style.display = 'none';
-            document.getElementById('leaderboard').style.display = 'none';
-            document.getElementById('current-raid').style.display = 'block';
-
-            raidStatus.forEach(raid => {
-                const raidBox = document.createElement('div');
-                raidBox.className = 'raid-box';
-                raidBox.innerHTML = `
-                    <div class="raid-title">${raid.raid} Raid</div>
-                    <div class="raid-description">${raid.status}</div>
-                `;
-                document.getElementById('current-raid').appendChild(raidBox);
-            });
-        }
-
-        document.getElementById('current-raid-btn').addEventListener('click', showRaidStatus);
-        document.getElementById('commands-btn').addEventListener('click', () => {
-            document.getElementById('current-raid').style.display = 'none';
-            document.getElementById('leaderboard').style.display = 'none';
-            document.getElementById('commands').style.display = 'block';
+        // Dynamically generate and display leaderboard entries
+        leaderboardData.forEach(user => {
+          const userDiv = document.createElement('div');
+          userDiv.classList.add('leaderboard-entry');
+          userDiv.innerHTML = `
+            <strong>${user.rank}. ${user.name}</strong>
+            <p>💰 ${user.balance} Baddies</p>
+          `;
+          leaderboardContainer.appendChild(userDiv);
         });
 
-        document.getElementById('leaderboard-btn').addEventListener('click', () => {
-            document.getElementById('current-raid').style.display = 'none';
-            document.getElementById('commands').style.display = 'none';
-            document.getElementById('leaderboard').style.display = 'block';
-            // Fetch leaderboard data (from backend)
-            fetch('/leaderboard')
-                .then(response => response.json())
-                .then(data => {
-                    const leaderboardContainer = document.getElementById('leaderboard-container');
-                    leaderboardContainer.innerHTML = '';
-                    data.forEach(user => {
-                        const userDiv = document.createElement('div');
-                        userDiv.classList.add('leaderboard-entry');
-                        userDiv.innerHTML = `
-                            <strong>${user.rank}. ${user.name}</strong>
-                            <p>💰 ${user.balance} Baddies</p>
-                        `;
-                        leaderboardContainer.appendChild(userDiv);
-                    });
-                })
-                .catch(err => console.error('Error fetching leaderboard:', err));
-        });
+      } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+        document.getElementById('leaderboard-container').innerHTML = 'Failed to load leaderboard.';
+      }
+    });
+  </script>
 
-        // Simulate login
-        localStorage.setItem('loggedIn', 'true'); // Simulate login
-        if (localStorage.getItem('loggedIn') === 'true') {
-            showDashboard();
+  <script>
+    function logout() {
+      window.location.href = "/logout";  // Redirect to logout route
+    }
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sections = document.querySelectorAll('.page-section');
+      const raidBoxes = document.querySelectorAll('.raid-box');
+
+      function showPage(pageId) {
+        sections.forEach(section => section.style.display = 'none');
+        const page = document.getElementById(pageId);
+        if (page) {
+          page.style.display = 'block';
         }
-    </script>
+
+        if (pageId === 'current_raid') {
+          updateRaidStatus(); // force update when opening raids
+        }
+      }
+
+      function updateRaidStatus() {
+        const currentMinute = new Date().getMinutes();
+
+        // Reset all raid boxes to be hidden
+        raidBoxes.forEach(box => box.style.display = 'none');
+
+        // Show active raids based on the time
+        if (currentMinute >= 15 && currentMinute < 30) {
+          document.getElementById('dedu-island').style.display = 'block';
+          document.getElementById('jungle-island').style.display = 'block';  // Show Jungle Island as well
+        } else if (currentMinute >= 30 && currentMinute < 45) {
+          document.getElementById('snow-island').style.display = 'block';
+        } else if (currentMinute >= 0 && currentMinute < 15) {
+          document.getElementById('jungle-island').style.display = 'block';
+        }
+      }
+
+      document.getElementById('show-dashboard').addEventListener('click', () => showPage('dashboard'));
+      document.getElementById('show-raid').addEventListener('click', () => showPage('current_raid'));
+      document.getElementById('show-commands').addEventListener('click', () => showPage('commands'));
+      document.getElementById('show-leaderboard').addEventListener('click', () => showPage('leaderboard'));
+
+      const staffButton = document.getElementById('show-staff');
+      if (staffButton) {
+        staffButton.addEventListener('click', () => showPage('staff'));
+      }
+
+      showPage('dashboard'); // Default
+    });
+  </script>
 </body>
 </html>
