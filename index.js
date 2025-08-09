@@ -5,7 +5,7 @@ const app = express();
 
 const clientId = '1389852325648007290';
 const clientSecret = 'dWOJvWCWiFWTKiw7xmrQa1iLoY7Pd6Ng';
-const redirectUri = 'https://blake0v2.github.io/TheArchAngels/Log%20in.html';
+const redirectUri = 'https://blake0v2.github.io/TheArchAngels/dashboard.html';
 
 // Serve the static frontend (if you deploy to GitHub Pages)
 app.use(express.static('public'));
@@ -54,6 +54,7 @@ app.get('/api/current-raid', (req, res) => {
 app.listen(8000, () => {
     console.log('Server running on https://blake0v2.github.io/testing/Log%20in.html');
 });
+
 
 
 
