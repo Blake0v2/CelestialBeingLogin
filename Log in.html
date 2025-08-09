@@ -62,7 +62,7 @@
         <div class="raid-footer">Discord.gg/A6xhTeGKJg</div>
       </div>
     </div>
-
+    
     <!-- Commands Page -->
     <div class="page-section" id="commands" style="display: none;">
       <h1>Bot Commands</h1>
@@ -78,7 +78,7 @@
         <div class="command-box"><div class="command-title">/sell</div><div class="command-description">Sell your stocks for money!</div></div>
         <div class="command-box"><div class="command-title">/portfolio</div><div class="command-description">Look at your portfolio.</div></div>
       </div>
-
+    
       <!-- Gambling Commands -->
       <h2 class="command-category">Gambling Commands</h2>
       <div class="command-grid">
@@ -92,7 +92,7 @@
         <div class="command-box"><div class="command-title">/bomb</div><div class="command-description">Defuse a bomb for money!</div></div>
         <div class="command-box"><div class="command-title">/rob</div><div class="command-description">Rob another user for their money!</div></div>
       </div>
-
+    
       <!-- Grind Commands -->
       <h2 class="command-category">Grind Commands</h2>
       <div class="command-grid">
@@ -104,6 +104,7 @@
         <div class="command-box"><div class="command-title">!apply4needcarry</div><div class="command-description">Apply for the 'Need Carry' role.</div></div>
       </div>
     </div>
+    
 
     <!-- Staff commands (visible only to admins) -->
     {% if admin %}
@@ -127,10 +128,8 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Removed redeclaration here, directly using injected 'commands' from the server
-      const commands = {{ commands | tojson }};  // Injected from server-side template
-
       const commandsContainer = document.getElementById('commands-container');
+      const commands = {{ commands | tojson }};  // Use the 'commands' object passed from the server
 
       // Ensure the data structure is correctly formatted
       for (const category in commands) {
@@ -143,7 +142,6 @@
           const commandBox = document.createElement('div');
           commandBox.classList.add('command-box');
           commandBox.innerHTML = `
-
             <div class="command-title">${command.name}</div>
             <div class="command-description">${command.description}</div>
           `;
