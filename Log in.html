@@ -129,6 +129,44 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const commandsContainer = document.getElementById('commands-container');
+      
+      try {
+        const commands = {{ commands | tojson }}; // Ensure commands are passed properly from the server.
+  
+        // Ensure that 'commands' is a valid object
+        if (commands && typeof commands === 'object') {
+          for (const category in commands) {
+            const categorySection = document.createElement('div');
+            categorySection.innerHTML = `<h2 class="command-category">${category} Commands</h2>`;
+            
+            const commandGrid = document.createElement('div');
+            commandGrid.classList.add('command-grid');
+  
+            commands[category].forEach(command => {
+              const commandBox = document.createElement('div');
+              commandBox.classList.add('command-box');
+              commandBox.innerHTML = `
+                <div class="command-title">${command.name}</div>
+                <div class="command-description">${command.description}</div>
+              `;
+              commandGrid.appendChild(commandBox);
+            });
+  
+            categorySection.appendChild(commandGrid);
+            commandsContainer.appendChild(categorySection);
+          }
+        } else {
+          console.error('Invalid "commands" object received.');
+        }
+      } catch (error) {
+        console.error('Error rendering commands:', error);
+      }
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const commandsContainer = document.getElementById('commands-container');
       const commands = {{ commands | tojson }};  // Use the 'commands' object passed from the server
 
       // Ensure the data structure is correctly formatted
@@ -209,3 +247,4 @@
   </script>
 </body>
 </html>
+
