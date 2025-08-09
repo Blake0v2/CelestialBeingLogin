@@ -31,11 +31,12 @@ app.get('/oauth2/callback', async (req, res) => {
         });
 
         const user = await oauth.getUser(token.access_token);
-        res.json(user);
-
+        
         // Simulate saving the token and user session (should be handled securely)
         // In real use, save to session or database
-        res.redirect('/dashboard');
+        
+        // Redirect to the specified URI after successful verification
+        res.redirect(redirectUri); // Redirecting to your specified URI after successful OAuth verification
     } catch (error) {
         res.status(500).send('Error during OAuth2 callback.');
     }
@@ -53,4 +54,5 @@ app.get('/api/current-raid', (req, res) => {
 app.listen(8000, () => {
     console.log('Server running on https://blake0v2.github.io/TheArchAngels/Log%20in.html');
 });
+
 
