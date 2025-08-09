@@ -52,8 +52,9 @@ app.get('/api/current-raid', (req, res) => {
 });
 
 app.listen(8000, () => {
-    console.log('Server running on https://blake0v2.github.io/testing/Log%20in.html');
+    console.log('Server running on https://blake0v2.github.io/TheArchAngels/dashboard.html');
 });
+
 
 
 
