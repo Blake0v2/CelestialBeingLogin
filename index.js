@@ -1,8 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
 const cookieParser = require('cookie-parser');
 const path = require('path');
-
+const url = require('url');
 const { OAuth2 } = require('discord-oauth2');
 const oauth = new OAuth2();
 const app = express();
@@ -10,17 +11,15 @@ const app = express();
 // Environment Variables
 const CLIENT_ID = '1389852325648007290';
 const CLIENT_SECRET = 'v5H1dQm0hC3vjep1AThH7j47CiHvtkU2';
-const REDIRECT_URI = 'http://localhost:8000/callback';
-const GUILD_ID = '1365848012194316312'; 
-const ADMIN_ROLE_IDS = '1365851423081762897'; 
+const REDIRECT_URI = 'http://localhost:8000/api/auth/discord/redirect';
+const GUILD_ID = '1365848012194316312';
+const ADMIN_ROLE_IDS = '1365851423081762897';
 const DISCORD_API_BASE = 'https://discord.com/api/v10';
-
-// Get the bot token from environment variable
-const BOT_TOKEN = process.env.BOT_TOKEN; // Ensure BOT_TOKEN is set as an environment variable
 
 // In-memory sessions for simplicity
 let sessions = {};
 
+// Middleware
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
@@ -36,44 +35,67 @@ app.get('/oauth2/login', (req, res) => {
 });
 
 // OAuth2 Callback Route
-app.get('/callback', async (req, res) => {
-    try {
-        const token = await oauth.tokenRequest({
-            clientId: CLIENT_ID,
-            clientSecret: CLIENT_SECRET,
-            code: req.query.code,
-            redirectUri: REDIRECT_URI,
-        });
+app.get('/api/auth/discord/redirect', async (req, res) => {
+    const { code } = req.query;
+    if (code) {
+        try {
+            // Step 1: Exchange the code for an access token
+            const formData = new url.URLSearchParams({
+                client_id: CLIENT_ID,
+                client_secret: CLIENT_SECRET,
+                grant_type: 'authorization_code',
+                code: code.toString(),
+                redirect_uri: REDIRECT_URI,
+            });
 
-        const user = await oauth.getUser(token.access_token);
+            const output = await axios.post('https://discord.com/api/oauth2/token', formData.toString(), {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+            });
 
-        // Fetch user data
-        const userId = user.id;
-        const userRoles = await getUserRoles(userId);
+            if (output.data) {
+                const access = output.data.access_token;
 
-        const isAdmin = userRoles.some(role => ADMIN_ROLE_IDS.includes(role));
-        const avatarUrl = `https://cdn.discordapp.com/avatars/${userId}/${user.avatar}.png`;
+                // Step 2: Fetch user info
+                const userinfo = await axios.get('https://discord.com/api/v10/users/@me', {
+                    headers: {
+                        Authorization: `Bearer ${access}`,
+                    },
+                });
 
-        // Store user session
-        sessions[userId] = {
-            username: user.username,
-            discriminator: user.discriminator,
-            admin: isAdmin,
-            avatarUrl: avatarUrl
-        };
+                // Step 3: Get user roles from the guild
+                const userRoles = await getUserRoles(userinfo.data.id);
 
-        // Set cookie and redirect to dashboard
-        res.cookie('user_id', userId, { httpOnly: true });
-        res.redirect('/dashboard');
-    } catch (error) {
-        console.error('Error during OAuth2 callback:', error);
-        res.status(500).send('Error during OAuth2 callback.');
+                // Check if the user has admin role
+                const isAdmin = userRoles.some(role => ADMIN_ROLE_IDS.includes(role));
+
+                // Step 4: Set up user session
+                sessions[userinfo.data.id] = {
+                    username: userinfo.data.username,
+                    discriminator: userinfo.data.discriminator,
+                    admin: isAdmin,
+                    avatarUrl: `https://cdn.discordapp.com/avatars/${userinfo.data.id}/${userinfo.data.avatar}.png`
+                };
+
+                // Step 5: Redirect to Dashboard
+                res.cookie('user_id', userinfo.data.id, { httpOnly: true });
+                res.redirect('/dashboard');
+            } else {
+                res.status(400).json({ error: 'Failed to get access token' });
+            }
+        } catch (error) {
+            console.error('Error during the OAuth flow:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    } else {
+        res.status(400).json({ error: 'No code provided' });
     }
 });
 
 // Get user roles from the guild
 async function getUserRoles(userId) {
-    const headers = { Authorization: `Bot ${BOT_TOKEN}` };
+    const headers = { Authorization: `Bot ${process.env.BOT_TOKEN}` };
     const response = await axios.get(`${DISCORD_API_BASE}/guilds/${GUILD_ID}/members/${userId}`, { headers });
     return response.data.roles || [];
 }
@@ -160,7 +182,7 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 
-// Run the server
+// Start the server
 app.listen(8000, () => {
     console.log('Server running on http://localhost:8000');
 });
