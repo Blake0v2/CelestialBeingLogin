@@ -164,15 +164,15 @@ body {
 .command-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px; /* Reduce gap between boxes */
+  gap: 15px; /* Reduced gap between boxes */
   justify-content: center;
 }
 
 .command-box {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  padding: 12px; /* Reduce padding inside each box */
-  width: 200px; /* Reduce the width to make it smaller */
+  padding: 12px; /* Reduced padding inside each box */
+  width: 200px; /* Reduced width to make it smaller */
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(4px);
   color: #ffffff;
@@ -186,12 +186,12 @@ body {
 
 .command-title {
   font-weight: bold;
-  font-size: 16px; /* Reduce font size */
+  font-size: 16px; /* Reduced font size */
   margin-bottom: 6px;
 }
 
 .command-description {
-  font-size: 12px; /* Reduce font size */
+  font-size: 12px; /* Reduced font size */
   opacity: 0.8;
 }
 
