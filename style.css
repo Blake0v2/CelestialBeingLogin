@@ -20,7 +20,7 @@ body {
 
 /* Login Container */
 .login-container {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(67,84,120,255);
   padding: 40px 60px;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -56,3 +56,4 @@ p {
 .discord-login-btn:hover {
   background-color: #5e6a8e;
 }
+
