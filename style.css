@@ -20,7 +20,7 @@ body {
 
 /* Login Container */
 .login-container {
-  background: rgba(67, 84, 120, 0.9); /* Dark Blue Background with slight transparency */
+  background: #2c3e50; 
   padding: 40px 60px;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -58,4 +58,5 @@ p {
   margin-bottom: 30px;
   text-align: center;
 }
+
 
