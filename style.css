@@ -20,11 +20,30 @@ body {
 
 /* Login Container */
 .login-container {
-  background: rgba(67,84,120,255);
+  background: rgba(67, 84, 120, 0.9); /* Dark Blue Background with slight transparency */
   padding: 40px 60px;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
+
+/* Login Button */
+.discord-login-btn {
+  background-color: #7289da; /* Default Discord button color */
+  color: white;
+  padding: 15px 30px;
+  border: 2px solid #2c3e50; /* Dark Blue border for button */
+  border-radius: 5px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.discord-login-btn:hover {
+  background-color: #5e6a8e;
+  border-color: #34495e; /* Darker blue for hover effect */
+}
+
 
 /* Header */
 h1 {
@@ -38,22 +57,5 @@ p {
   font-size: 1.2rem;
   margin-bottom: 30px;
   text-align: center;
-}
-
-/* Login Button */
-.discord-login-btn {
-  background-color: #7289da;
-  color: white;
-  padding: 15px 30px;
-  border: none;
-  border-radius: 5px;
-  font-size: 1.2rem;
-  cursor: pointer;
-  text-decoration: none;
-  transition: background-color 0.3s;
-}
-
-.discord-login-btn:hover {
-  background-color: #5e6a8e;
 }
 
